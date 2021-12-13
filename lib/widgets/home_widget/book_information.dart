@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:book_reading/models/last_point.dart';
 import 'package:book_reading/models/user.dart';
 import 'package:book_reading/screens/book_view.dart';
 import 'package:book_reading/utils/utils.dart';
@@ -6,13 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BookInformation extends StatefulWidget {
-  BookInformation({
-    Key? key,
-    required this.book,
-    required this.onShowingDetails,
-  }) : super(key: key);
+  BookInformation(
+      {Key? key,
+      required this.book,
+      required this.onShowingDetails,
+      required this.onLastPointChanged})
+      : super(key: key);
 
   final Book book;
+  final Function(LastPoint) onLastPointChanged;
 
   final Function(bool) onShowingDetails;
 
@@ -90,8 +95,16 @@ class _BookInformationState extends State<BookInformation> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pushNamed(BookView.routeName,
-                            arguments: widget.book);
+                        Navigator.of(context).pushNamed(
+                          BookView.routeName,
+                          arguments: BookViewArgs(
+                            book: widget.book,
+                            onLastPointChanged: (LastPoint lastPoint) {
+                              log("PRINTING LAST POINT CHANGED FROM BOOK INFORMATION");
+                              widget.onLastPointChanged(lastPoint);
+                            },
+                          ),
+                        );
                       },
                       child: Container(
                         decoration: BoxDecoration(

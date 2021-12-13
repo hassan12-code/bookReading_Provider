@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:book_reading/models/last_point.dart';
 import 'package:book_reading/models/user.dart';
 import 'package:book_reading/utils/utils.dart';
 import 'package:book_reading/widgets/home_widget/book_cover.dart';
@@ -9,14 +12,19 @@ import 'package:book_reading/widgets/home_widget/reading_section.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   static const String routeName = '/home';
 
   @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  @override
   Widget build(BuildContext context) {
-    final user = ModalRoute.of(context)!.settings.arguments as User;
+    final args = ModalRoute.of(context)!.settings.arguments as HomeArgs;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -40,11 +48,19 @@ class Home extends StatelessWidget {
                   height: MediaQuery.of(context).size.height * 0.13,
                 ),
                 ReadingSection(
-                  books: user.books,
-                ),
-                BestOfTheDay(book: getBestOfTheDayBook(user.books)),
-                //TODO: Create Continue Reading Widget
-                // ContinueReading(book: user.books.first),
+                    books: args.user.books,
+                    onLastPointChanged: (LastPoint lastPoint) {
+                      log("PRINTING LAST POINT CHANGED FROM HOME");
+                      setState(() {
+                        args.lastPoint = lastPoint;
+                      });
+                    }),
+                BestOfTheDay(book: getBestOfTheDayBook(args.user.books)),
+                if (args.lastPoint != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    child: ContinueReading(lastPoint: args.lastPoint!),
+                  )
               ],
             ),
           ],
@@ -59,4 +75,12 @@ class Home extends StatelessWidget {
 
     return booksToSort.first;
   }
+}
+
+class HomeArgs {
+  User user;
+
+  LastPoint? lastPoint;
+
+  HomeArgs({required this.user, this.lastPoint});
 }

@@ -35,15 +35,12 @@ class _PageReadingState extends State<PageReading> {
             Expanded(
               child: PageView(
                   onPageChanged: (int index) {
-                    setState(() {
-                      currentPage = index + 1;
-                    });
                     setLastLeftOffPoint(
-                        pageNo: currentPage,
-                        chapterNo: args.chapter.chapterNo,
-                        bookAuthor: args.book.author,
-                        bookTitle: args.book.title,
-                        totalChapters: args.book.chapters.length);
+                      book: args.book,
+                      args: args,
+                      chapterNo: args.chapter.chapterNo,
+                      pageNo: index + 1,
+                    );
                   },
                   children: args.chapter.pages
                       .map((page) => Padding(
@@ -72,18 +69,19 @@ class _PageReadingState extends State<PageReading> {
   }
 
   void setLastLeftOffPoint(
-      {required String bookTitle,
-      required String bookAuthor,
+      {required Book book,
       required int chapterNo,
-      required int totalChapters,
-      required int pageNo}) async {
+      required int pageNo,
+      required PageReadingArguments args}) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     final lastPoint = LastPoint(
-        bookTitle: bookTitle,
-        bookAuthor: bookAuthor,
+        bookTitle: book.title,
+        bookAuthor: book.author,
         chapterNo: chapterNo,
-        totalChapters: totalChapters,
+        totalChapters: book.chapters.length,
+        bookCover: book.bookCover,
         pageNo: pageNo);
+    args.onLastPointChanged(lastPoint);
 
     _pref.setString("lastPoint", jsonEncode(lastPoint.toJson()));
   }
@@ -92,6 +90,10 @@ class _PageReadingState extends State<PageReading> {
 class PageReadingArguments {
   final Chapter chapter;
   final Book book;
+  final Function(LastPoint) onLastPointChanged;
 
-  PageReadingArguments({required this.chapter, required this.book});
+  PageReadingArguments(
+      {required this.chapter,
+      required this.book,
+      required this.onLastPointChanged});
 }

@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:book_reading/models/last_point.dart';
 import 'package:book_reading/models/user.dart';
 import 'package:book_reading/utils/utils.dart';
 import 'package:book_reading/widgets/book_view_widgets/book_details.dart';
@@ -15,7 +18,7 @@ class BookView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Book book = ModalRoute.of(context)!.settings.arguments as Book;
+    final args = ModalRoute.of(context)!.settings.arguments as BookViewArgs;
     return Scaffold(
       body: Stack(
         children: [
@@ -25,7 +28,7 @@ class BookView extends StatelessWidget {
               bottomRight: Radius.circular(50),
             ),
             child: BookCover(
-              bookCover: book.bookCover,
+              bookCover: args.book.bookCover,
               height: screenHeight(context) * 0.45,
               width: screenWidth(context),
               fit: BoxFit.cover,
@@ -34,15 +37,21 @@ class BookView extends StatelessWidget {
           ColorOverlay(),
           Column(
             children: [
-              BookDetails(book: book),
+              BookDetails(book: args.book),
               Container(
                 height: screenHeight(context) * 0.4,
                 child: ListView.builder(
-                  itemCount: book.chapters.length,
+                  itemCount: args.book.chapters.length,
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
-                    final chapter = book.chapters[index];
-                    return ChapterTile(chapter: chapter, book: book);
+                    final chapter = args.book.chapters[index];
+                    return ChapterTile(
+                        chapter: chapter,
+                        book: args.book,
+                        onLastPointChanged: (LastPoint lastPoint) {
+                          log("PRINTING LAST POINT CHANGED FROM BOOK VIEW");
+                          args.onLastPointChanged(lastPoint);
+                        });
                   },
                 ),
               )
@@ -52,4 +61,11 @@ class BookView extends StatelessWidget {
       ),
     );
   }
+}
+
+class BookViewArgs {
+  final Book book;
+  final Function(LastPoint) onLastPointChanged;
+
+  BookViewArgs({required this.book, required this.onLastPointChanged});
 }

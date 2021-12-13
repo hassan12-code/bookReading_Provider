@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:book_reading/models/last_point.dart';
 import 'package:book_reading/models/user.dart';
 import 'package:book_reading/utils/utils.dart';
 import 'package:book_reading/widgets/home_widget/book_cover.dart';
@@ -8,9 +11,11 @@ class ReadingSection extends StatefulWidget {
   ReadingSection({
     Key? key,
     required this.books,
+    required this.onLastPointChanged,
   }) : super(key: key);
 
   final List<Book> books;
+  final Function(LastPoint) onLastPointChanged;
 
   @override
   State<ReadingSection> createState() => _ReadingSectionState();
@@ -46,13 +51,16 @@ class _ReadingSectionState extends State<ReadingSection> {
                       clipBehavior: Clip.none,
                       children: [
                         BookInformation(
-                          book: book,
-                          onShowingDetails: (bool isShowingDetails) {
-                            setState(() {
-                              isShowingCover = !isShowingDetails;
-                            });
-                          },
-                        ),
+                            book: book,
+                            onShowingDetails: (bool isShowingDetails) {
+                              setState(() {
+                                isShowingCover = !isShowingDetails;
+                              });
+                            },
+                            onLastPointChanged: (LastPoint lastPoint) {
+                              log("PRINT LAST POINT CHANGED FROM READING SECTION");
+                              widget.onLastPointChanged(lastPoint);
+                            }),
                         isShowingCover == true
                             ? Positioned(
                                 top: -20,
