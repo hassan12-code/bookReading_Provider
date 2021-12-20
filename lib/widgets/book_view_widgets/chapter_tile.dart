@@ -1,22 +1,20 @@
-import 'dart:developer';
-
-import 'package:book_reading/models/last_point.dart';
 import 'package:book_reading/models/user.dart';
+import 'package:book_reading/providers/ChapterArguments_provider.dart';
+import 'package:book_reading/providers/generalUpdates_provider.dart';
 import 'package:book_reading/screens/page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class ChapterTile extends StatelessWidget {
   const ChapterTile({
     Key? key,
     required this.chapter,
     required this.book,
-    required this.onLastPointChanged,
   }) : super(key: key);
 
   final Chapter chapter;
   final Book book;
-  final Function(LastPoint) onLastPointChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -24,16 +22,10 @@ class ChapterTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: GestureDetector(
         onTap: () {
+          Provider.of<ChapterArguments>(context, listen: false).setValues(chapter.title, chapter.description, chapter.pages, chapter.chapterNo, book);
+          Provider.of<GeneralUpdates>(context,listen: false).updates(1);
           Navigator.of(context).pushNamed(
             PageReading.routeName,
-            arguments: PageReadingArguments(
-              chapter: chapter,
-              book: book,
-              onLastPointChanged: (LastPoint lastPoint) {
-                log("LAST POINT PRINTING FROM CHAPTER TILE");
-                onLastPointChanged(lastPoint);
-              },
-            ),
           );
         },
         child: Card(

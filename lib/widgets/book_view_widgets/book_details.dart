@@ -81,7 +81,6 @@ class BookDetails extends StatelessWidget {
                   bookCover: book.bookCover,
                   height: screenHeight(context) * 0.25,
                   width: screenWidth(context) * 0.25,
-                  // width: screenWi,
                 ),
               ],
             ),

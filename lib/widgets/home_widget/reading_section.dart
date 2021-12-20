@@ -1,28 +1,18 @@
-import 'dart:developer';
-
-import 'package:book_reading/models/last_point.dart';
 import 'package:book_reading/models/user.dart';
 import 'package:book_reading/utils/utils.dart';
 import 'package:book_reading/widgets/home_widget/book_cover.dart';
 import 'package:book_reading/widgets/home_widget/book_information.dart';
 import 'package:flutter/material.dart';
+import 'package:book_reading/providers/bookCover_provider.dart';
+import 'package:provider/provider.dart';
 
-class ReadingSection extends StatefulWidget {
+class ReadingSection extends StatelessWidget {
   ReadingSection({
     Key? key,
     required this.books,
-    required this.onLastPointChanged,
   }) : super(key: key);
 
   final List<Book> books;
-  final Function(LastPoint) onLastPointChanged;
-
-  @override
-  State<ReadingSection> createState() => _ReadingSectionState();
-}
-
-class _ReadingSectionState extends State<ReadingSection> {
-  bool isShowingCover = true;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +31,7 @@ class _ReadingSectionState extends State<ReadingSection> {
           child: ListView(
             padding: EdgeInsets.symmetric(horizontal: 25),
             scrollDirection: Axis.horizontal,
-            children: widget.books.map(
+            children: books.map(
               (book) {
                 return Padding(
                   key: Key(book.title),
@@ -52,16 +42,8 @@ class _ReadingSectionState extends State<ReadingSection> {
                       children: [
                         BookInformation(
                             book: book,
-                            onShowingDetails: (bool isShowingDetails) {
-                              setState(() {
-                                isShowingCover = !isShowingDetails;
-                              });
-                            },
-                            onLastPointChanged: (LastPoint lastPoint) {
-                              log("PRINT LAST POINT CHANGED FROM READING SECTION");
-                              widget.onLastPointChanged(lastPoint);
-                            }),
-                        isShowingCover == true
+                            ),
+                        Provider.of<BookCoverClass>(context).isShowingCover
                             ? Positioned(
                                 top: -20,
                                 left: 25,
@@ -78,4 +60,5 @@ class _ReadingSectionState extends State<ReadingSection> {
       ],
     );
   }
+
 }

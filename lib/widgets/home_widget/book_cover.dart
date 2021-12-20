@@ -1,4 +1,3 @@
-import 'package:book_reading/models/user.dart';
 import 'package:flutter/material.dart';
 
 class BookCover extends StatelessWidget {

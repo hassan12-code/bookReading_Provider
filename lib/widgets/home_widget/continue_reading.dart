@@ -1,17 +1,15 @@
-import 'package:book_reading/models/last_point.dart';
-import 'package:book_reading/models/user.dart';
+import 'package:book_reading/providers/lastPoint_provider.dart';
 import 'package:book_reading/utils/utils.dart';
 import 'package:book_reading/widgets/home_widget/book_cover.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class ContinueReading extends StatelessWidget {
   const ContinueReading({
     Key? key,
-    required this.lastPoint,
   }) : super(key: key);
 
-  final LastPoint lastPoint;
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +38,12 @@ class ContinueReading extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          lastPoint.bookTitle,
+                          Provider.of<lastPoint>(context).title.toString(),
                           style: GoogleFonts.poppins(
                             fontSize: 17,
                           ),
                         ),
-                        Text(lastPoint.bookAuthor),
+                         Text(Provider.of<lastPoint>(context).author.toString()),
                       ],
                     ),
                   ],
@@ -59,16 +57,19 @@ class ContinueReading extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Page: ${lastPoint.pageNo}'),
+                         
+                            Text('Page: ${Provider.of<lastPoint>(context).pageNo}'),
                             Text(
-                                'Chapter ${lastPoint.chapterNo} of ${lastPoint.totalChapters}'),
+                             
+                                 'Chapter ${Provider.of<lastPoint>(context).chapterNo} of ${Provider.of<lastPoint>(context).totalChapters}'),
                           ],
                         )
                       ],
                     ),
                     BookCover(
                       key: Key("12"),
-                      bookCover: lastPoint.bookCover,
+ 
+                      bookCover: Provider.of<lastPoint>(context).bookCover.toString(),
                       height: 50,
                       width: 50,
                     ),

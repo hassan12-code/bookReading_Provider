@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+// import 'package:book_reading/models/last_point.dart';
 import 'package:book_reading/models/last_point.dart';
 import 'package:book_reading/models/user.dart';
 import 'package:book_reading/screens/home.dart';
@@ -7,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:provider/provider.dart';
+import 'package:book_reading/providers/PersonArguments_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Splash extends StatefulWidget {
@@ -21,30 +24,30 @@ class _SplashState extends State<Splash> {
   void initState() {
     getUserData();
     Future.delayed(Duration(seconds: 2), () {
-      Navigator.of(context).pushNamed(Home.routeName,
-          arguments: HomeArgs(user: user, lastPoint: lastPoint));
+      Navigator.of(context).pushNamed(Home.routeName);
     });
     super.initState();
   }
 
   late User user;
-  LastPoint? lastPoint;
+  // LastPoint? lastPoint;
 
   Future<void> getUserData() async {
     final data = await rootBundle.loadString('assets/data/users.json');
     final Map<String, dynamic> rawData = jsonDecode(data);
     final userData = rawData["users"]["123456"];
     this.user = User.fromJson(userData);
+    Provider.of<Person>(context, listen: false).setValues(user.firstName, user.lastName, user.books);
 
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    // SharedPreferences _prefs = await SharedPreferences.getInstance();
 
-    final lastPointString = _prefs.getString("lastPoint");
+    // final lastPointString = _prefs.getString("lastPoint");
 
-    if (lastPointString != null) {
-      final lastPointRaw = jsonDecode(lastPointString) as Map<String, dynamic>;
+    // if (lastPointString != null) {
+    //   final lastPointRaw = jsonDecode(lastPointString) as Map<String, dynamic>;
 
-      this.lastPoint = LastPoint.fromJson(lastPointRaw);
-    }
+    //   this.lastPoint = LastPoint.fromJson(lastPointRaw);
+    // }
   }
 
   @override

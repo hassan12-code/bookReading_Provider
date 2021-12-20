@@ -1,4 +1,6 @@
-class User {
+import 'package:flutter/cupertino.dart';
+
+class User with ChangeNotifier {
   String firstName;
   String lastName;
   List<Book> books;
@@ -16,6 +18,7 @@ class User {
       books: (json["books"] as List).map((e) => Book.fromJson(e)).toList(),
     );
   }
+   notifyListeners();
 }
 
 class Book {
@@ -44,11 +47,14 @@ class Book {
       bookCover: json["bookCover"],
       chapters:
           (json["chapters"] as List).map((e) => Chapter.fromJson(e)).toList(),
+          
     );
+    
   }
+  
 }
 
-class Chapter {
+class Chapter{
   String title;
   String description;
   List pages;

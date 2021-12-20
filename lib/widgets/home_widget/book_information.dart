@@ -1,36 +1,28 @@
-import 'dart:developer';
-
-import 'package:book_reading/models/last_point.dart';
 import 'package:book_reading/models/user.dart';
+import 'package:book_reading/providers/BookArguments_provider.dart';
+import 'package:book_reading/providers/bookCover_provider.dart';
 import 'package:book_reading/screens/book_view.dart';
 import 'package:book_reading/utils/utils.dart';
 import 'package:book_reading/widgets/home_widget/rating.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
-class BookInformation extends StatefulWidget {
+
+class BookInformation extends StatelessWidget {
   BookInformation(
       {Key? key,
       required this.book,
-      required this.onShowingDetails,
-      required this.onLastPointChanged})
+      })
       : super(key: key);
 
   final Book book;
-  final Function(LastPoint) onLastPointChanged;
-
-  final Function(bool) onShowingDetails;
-
-  @override
-  State<BookInformation> createState() => _BookInformationState();
-}
-
-class _BookInformationState extends State<BookInformation> {
-  bool isShowingDetails = false;
 
   @override
   Widget build(BuildContext context) {
+  
     return Container(
+      
         height: screenHeight(context) * 0.28,
         width: screenWidth(context) * 0.45,
         decoration: BoxDecoration(
@@ -47,8 +39,10 @@ class _BookInformationState extends State<BookInformation> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            isShowingDetails == true
-                ? BookDetails(details: widget.book.details)
+           Provider.of<BookCoverClass>(context).isShowingCover == true
+                ? BookDetails(
+                  details: book.details
+                  )
                 : Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -58,12 +52,12 @@ class _BookInformationState extends State<BookInformation> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Rating(rating: widget.book.rating),
+                            Rating(rating: book.rating),
                           ],
                         ),
                         SizedBox(height: 20),
-                        Text(widget.book.title),
-                        Text(widget.book.author),
+                        Text(book.title),
+                        Text(book.author),
                       ],
                     ),
                   ),
@@ -74,13 +68,16 @@ class _BookInformationState extends State<BookInformation> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        if (isShowingDetails == false) {
-                          isShowingDetails = true;
-                        } else {
-                          isShowingDetails = false;
+                        if (Provider.of<BookCoverClass>(context, listen: false).isShowingDetails == false) {
+                           Provider.of<BookCoverClass>(context, listen: false).isShowingDetails == true;
+                           Provider.of<BookCoverClass>(context, listen: false).isShowingCover == false;
+                            Provider.of<BookCoverClass>(context, listen: false).onShowingDetails();
                         }
-                        setState(() {});
-                        widget.onShowingDetails(isShowingDetails);
+                        else {
+                           Provider.of<BookCoverClass>(context, listen: false).isShowingDetails == false;
+                           Provider.of<BookCoverClass>(context, listen: false).isShowingCover == true;
+                            Provider.of<BookCoverClass>(context, listen: false).onShowingDetails();
+                        }
                       },
                       child: Container(
                         child: Center(
@@ -95,15 +92,10 @@ class _BookInformationState extends State<BookInformation> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
+                        Provider.of<BookArguments>(context, listen: false).setValues(book.title,book.author,book.details,book.rating,book.bookCover,book.chapters,book);
+                       
                         Navigator.of(context).pushNamed(
                           BookView.routeName,
-                          arguments: BookViewArgs(
-                            book: widget.book,
-                            onLastPointChanged: (LastPoint lastPoint) {
-                              log("PRINTING LAST POINT CHANGED FROM BOOK INFORMATION");
-                              widget.onLastPointChanged(lastPoint);
-                            },
-                          ),
                         );
                       },
                       child: Container(
@@ -132,6 +124,8 @@ class _BookInformationState extends State<BookInformation> {
         ));
   }
 }
+
+
 
 class BookDetails extends StatelessWidget {
   BookDetails({

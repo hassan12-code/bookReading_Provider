@@ -2,15 +2,18 @@ import 'dart:developer';
 
 import 'package:book_reading/models/last_point.dart';
 import 'package:book_reading/models/user.dart';
+import 'package:book_reading/providers/PersonArguments_provider.dart';
+import 'package:book_reading/providers/lastPoint_provider.dart';
 import 'package:book_reading/utils/utils.dart';
 import 'package:book_reading/widgets/home_widget/book_cover.dart';
 import 'package:book_reading/widgets/home_widget/book_of_the_day.dart';
 import 'package:book_reading/widgets/home_widget/circle_notch.dart';
 import 'package:book_reading/widgets/home_widget/continue_reading.dart';
-import 'package:book_reading/widgets/home_widget/rating.dart';
 import 'package:book_reading/widgets/home_widget/reading_section.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -24,7 +27,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as HomeArgs;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -48,18 +50,13 @@ class _HomeState extends State<Home> {
                   height: MediaQuery.of(context).size.height * 0.13,
                 ),
                 ReadingSection(
-                    books: args.user.books,
-                    onLastPointChanged: (LastPoint lastPoint) {
-                      log("PRINTING LAST POINT CHANGED FROM HOME");
-                      setState(() {
-                        args.lastPoint = lastPoint;
-                      });
-                    }),
-                BestOfTheDay(book: getBestOfTheDayBook(args.user.books)),
-                if (args.lastPoint != null)
+                    books:  Provider.of<Person>(context, listen: false).books,
+                    ),
+                BestOfTheDay(book: getBestOfTheDayBook( Provider.of<Person>(context, listen: false).books)),
+                if (Provider.of<lastPoint>(context).book != null)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: ContinueReading(lastPoint: args.lastPoint!),
+                     child: ContinueReading(),
                   )
               ],
             ),
@@ -80,7 +77,6 @@ class _HomeState extends State<Home> {
 class HomeArgs {
   User user;
 
-  LastPoint? lastPoint;
 
-  HomeArgs({required this.user, this.lastPoint});
+  HomeArgs({required this.user});
 }
